@@ -47,7 +47,7 @@ export class StormGlass {
     private normalizeResponse(
         points: StormGlassForecastResponse
     ): ForecastPoint[] {
-        return points.hours.filter(this.isValidPoint.bind(this)).map((point) => ({
+        return points?.hours?.filter(this.isValidPoint.bind(this)).map((point) => ({
             swellDirection: point.swellDirection[this.stormGlassAPISource],
             swellHeight: point.swellHeight[this.stormGlassAPISource],
             swellPeriod: point.swellPeriod[this.stormGlassAPISource],
