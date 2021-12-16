@@ -1,0 +1,37 @@
+{
+  "compilerOptions": {
+    "target": "es2016",
+    "module": "commonjs",                          /* Specify the root folder within your source files. */
+    "moduleResolution": "node",
+    "lib":["es2019"],
+    "outDir": "dist",
+    "esModuleInterop": true,
+    "strict": true,                                      /* Enable all strict type-checking options. */
+    "noImplicitAny": true,                            /* Enable error reporting for expressions and declarations with an implied `any` type.. */
+    "strictNullChecks": true,                         /* When type checking, take into account `null` and `undefined`. */
+    "strictFunctionTypes": true,
+    "noImplicitThis": true,      
+    "alwaysStrict": true,
+    "noImplicitReturns": true,
+    "allowSyntheticDefaultImports": true,
+    "baseUrl": ".",
+    "paths": {
+      "@src/":["./src/*"],
+      "@test/*":["./test/*"]
+    },
+    "rootDirs": [
+      "./src",
+      ".test"
+    ],
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+  },
+  "include": [
+    "./src/**/*.ts",
+    "./test/**/*.ts"
+  ],
+  "exclude": [
+    "./node_modules/*",
+    "dist"
+  ]
+}
