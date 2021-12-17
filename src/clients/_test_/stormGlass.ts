@@ -1,4 +1,5 @@
-import { AxiosStatic } from "axios";
+import { AxiosError, AxiosStatic } from "axios";
+import { InternalError } from '../../util/error/interneal-error';
 
 export interface StormGlassPointSource {
     [key: string]: number
@@ -26,6 +27,18 @@ export interface ForecastPoint {
     windSpeed: number
     swellDirection: number
 }
+export class ClientRequestError extends InternalError{
+    constructor(message: string){
+        const internalMessage = 'Unexpected error when trying to comunicate to StormGlass: ';
+        super(`${internalMessage}: ${message}`)
+    }
+}
+export class StormGlassResponseError extends InternalError{
+    constructor(message: string){
+        const internalMessage = 'Unexpected error when trying to comunicate to StormGlass: ';
+        super(`${internalMessage}: ${message}`)
+    }
+}
 export class StormGlass {
     readonly stormGlassAPIParams = 'swellDorection,swellHeight,swellPeriod,waveDorectopm,waveHeight,windDirection,windSpeed'
     readonly stormGlassAPISource = 'noaa'
@@ -33,15 +46,24 @@ export class StormGlass {
     constructor(protected request: AxiosStatic) { }
 
     public async fetchPoints(lat: number, lng: number): Promise<ForecastPoint[]> {
-        const response = await this.request.get<StormGlassForecastResponse>(
-            `https://api.stormglass.io/v2/weather/point?lat=${lat}&lng=${lng}&params=${this.stormGlassAPIParams}&source=${this.stormGlassAPISource}`,
-            {
-              headers: {
-                Authorization: 'fake-token',
-              },
+        try {
+            const response = await this.request.get<StormGlassForecastResponse>(
+                `https://api.stormglass.io/v2/weather/point?lat=${lat}&lng=${lng}&params=${this.stormGlassAPIParams}&source=${this.stormGlassAPISource}`,
+                {
+                  headers: {
+                    Authorization: 'fake-token',
+                  },
+                }
+              );
+              return this.normalizeResponse(response.data);
+        } catch (err: unknown) {
+            const error = err as AxiosError
+            const errorType = err as Error
+            if(error.response && error.response?.data){
+                throw new StormGlassResponseError(`Error ${JSON.stringify(error.response.data)} Code: ${error.response.status}`)
             }
-          );
-          return this.normalizeResponse(response.data);
+            throw new ClientRequestError(errorType.message)
+        }
     }
 
     private normalizeResponse(
